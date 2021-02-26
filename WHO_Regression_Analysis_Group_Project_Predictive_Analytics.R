@@ -1,11 +1,16 @@
 #import the dataset
 library(readr)
 led <- read_csv("LANGARA/DANA 4810/Group project/Life Expectancy Data.csv")
+
 led <- Life.Expectancy.Data
+=======
+
+
 #create descriptive statistics to look at missing values and means, medians, max min
 summary (led)
 
 str(led)
+
 
 dim(led)
 
@@ -30,6 +35,8 @@ diagnose_numeric(led)
 
 diagnose_outlier(led)
 
+
+=======
 
 
 #create histoframs to look at the distrinution of numeric variables
@@ -57,6 +64,7 @@ hist(led$`thinness 5-9 years`)
 #there are 10 missing values on the target variable, those were dropped
 
 library(tidyr)
+
 led.complete.target<- led %>% drop_na(Life.expectancy)
 
 # fill the na values using the mice method of cart
@@ -73,6 +81,9 @@ summary(led.complete.target)
 
 #converting status factor into numeric by creating new column Status_1
 led.complete$Status_1 <- ifelse(led.complete$Status=="Developed", 1, 0)
+
+=======
+led.complete.target<- led %>% drop_na(`Life expectancy`)
 
 
 #split the dataset into training and testing 80:20
@@ -91,6 +102,7 @@ led.test=subset(led.complete.target, sample==FALSE)
 #to perform correlation on all numerical variables we need to drop 2 categorical columns, we also need to get rid of na values (deleted for now)
 
 led.train.num = subset(led, select = -c(Country, Status))
+
 
 led.num1<- led.train.num %>% drop_na()
 
@@ -114,4 +126,17 @@ corrplot(correlation, type = "upper", order = "hclust",
 
 
 
+
+=======
+#led.num1<- led.num %>% drop_na()
+
+
+#run correlation on all variables  - correlation matrix and generate a graph using corrplot
+correlation <-cor(led.train.num)
+correlation
+
+# for those who do not have the library install.packages("corrplot")
+library(corrplot)
+corrplot(correlation, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
 
