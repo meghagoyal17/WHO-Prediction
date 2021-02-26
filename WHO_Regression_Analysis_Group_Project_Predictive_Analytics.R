@@ -2,10 +2,41 @@
 library(readr)
 led <- read_csv("LANGARA/DANA 4810/Group project/Life Expectancy Data.csv")
 
+led <- Life.Expectancy.Data
+=======
+
+
 #create descriptive statistics to look at missing values and means, medians, max min
 summary (led)
 
 str(led)
+
+
+dim(led)
+
+#installing pakage for deeper analysis of variables
+install.packages("dlookr", dep = TRUE)
+
+library(dlookr)
+
+#diagnose the variables more deeply 
+diagnose(led)
+
+#pair plot
+
+
+summary(led)
+
+
+#diagnose the variables more deeply 
+diagnose_category(led)
+
+diagnose_numeric(led)
+
+diagnose_outlier(led)
+
+
+=======
 
 
 #create histoframs to look at the distrinution of numeric variables
@@ -33,7 +64,27 @@ hist(led$`thinness 5-9 years`)
 #there are 10 missing values on the target variable, those were dropped
 
 library(tidyr)
+
+led.complete.target<- led %>% drop_na(Life.expectancy)
+
+# fill the na values using the mice method of cart
+library(mice)
+md.pattern(led.complete.target)
+
+imp <- mice(led.complete.target, method = "cart", m = 1)
+summary(imp)
+led.complete <- complete(imp)
+
+#compare the mean and other variances between na data and without na data
+summary(led.complete)
+summary(led.complete.target)
+
+#converting status factor into numeric by creating new column Status_1
+led.complete$Status_1 <- ifelse(led.complete$Status=="Developed", 1, 0)
+
+=======
 led.complete.target<- led %>% drop_na(`Life expectancy`)
+
 
 #split the dataset into training and testing 80:20
 
@@ -52,6 +103,31 @@ led.test=subset(led.complete.target, sample==FALSE)
 
 led.train.num = subset(led, select = -c(Country, Status))
 
+
+led.num1<- led.train.num %>% drop_na()
+
+
+#Correlation without dropping na values
+install.packages("corrr")
+library(corrr)
+res.cor <- correlate(led.train.num)
+res.cor
+
+#Check Correlation of all columns with respect to life expectancy 
+res.cor %>% 
+  focus(Life.expectancy)
+
+# for those who do not have the library install.packages("corrplot")
+install.packages("corrplot")
+library(corrplot)
+corrplot(correlation, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+
+
+
+
+
+=======
 #led.num1<- led.num %>% drop_na()
 
 
@@ -63,3 +139,4 @@ correlation
 library(corrplot)
 corrplot(correlation, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
+
