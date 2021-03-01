@@ -40,26 +40,26 @@ diagnose_outlier(led)
 
 
 #create histoframs to look at the distrinution of numeric variables
-hist(led$`Adult Mortality`)
-hist(led$`Hepatitis B`)
+hist(led$Adult.Mortality)
+hist(led$Hepatitis.B)
 hist(led$Polio)
 hist(led$GDP)
-hist(led$`Income composition of resources`)
-hist(led$`infant deaths`)
+hist(led$Income.composition.of.resources)
+hist(led$infant.deaths)
 hist(led$Measles)
-hist(led$`Total expenditure`)
+hist(led$Total.expenditure)
 hist(led$Population)
 hist(led$Schooling)
-hist(led$Status)
+barplot(table(led$Status)) #bar plot for status
 hist(led$Alcohol)
 hist(led$BMI)
 hist(led$Diphtheria)
-hist(led$`thinness  1-19 years`)
-hist(led$`Life expectancy`)
-hist(led$`percentage expenditure`)
-hist(led$`under-five deaths`)
-hist(led$`HIV/AIDS`)
-hist(led$`thinness 5-9 years`)
+hist(led$thinness..1.19.years)
+hist(led$Life.expectancy)
+hist(led$percentage.expenditure)
+hist(led$under.five.deaths)
+hist(led$HIV.AIDS)
+hist(led$thinness.5.9.years)
 
 #there are 10 missing values on the target variable, those were dropped
 
