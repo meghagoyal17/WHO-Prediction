@@ -1,9 +1,9 @@
 #import the dataset
 library(readr)
-led <- read_csv("LANGARA/DANA 4810/Group project/Life Expectancy Data.csv")
+led <- read_csv("C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data.csv")
 
 led <- Life.Expectancy.Data
-=======
+#=======
 
 
 #create descriptive statistics to look at missing values and means, medians, max min
@@ -36,7 +36,7 @@ diagnose_numeric(led)
 diagnose_outlier(led)
 
 
-=======
+#=======
 
 
 #create histoframs to look at the distrinution of numeric variables
@@ -60,6 +60,28 @@ hist(led$`percentage expenditure`)
 hist(led$`under-five deaths`)
 hist(led$`HIV/AIDS`)
 hist(led$`thinness 5-9 years`)
+#Group by values to illustrate accuracy issues
+library(dplyr)
+by_country<-led %>% group_by(Country)
+by_country%>% summarise(
+  summary_mean=mean(Population),
+  summary_sd=sd(Population),
+  summary_max=max(Population),
+  summary_min=min(Population)
+)
+by_country%>% summarise(
+  summary_mean=mean(`Life expectancy`),
+  summary_sd=sd(`Life expectancy`),
+  summary_max=max(`Life expectancy`),
+  summary_min=min(`Life expectancy`)
+)
+by_country%>% summarise(
+  summary_mean=mean(`Life expectancy`),
+  summary_sd=sd(`Life expectancy`),
+  summary_max=max(`Life expectancy`),
+  summary_min=min(`Life expectancy`)
+)
+
 
 #there are 10 missing values on the target variable, those were dropped
 
@@ -68,6 +90,7 @@ library(tidyr)
 led.complete.target<- led %>% drop_na(Life.expectancy)
 
 # fill the na values using the mice method of cart
+
 library(mice)
 md.pattern(led.complete.target)
 
@@ -82,7 +105,7 @@ summary(led.complete.target)
 #converting status factor into numeric by creating new column Status_1
 led.complete$Status_1 <- ifelse(led.complete$Status=="Developed", 1, 0)
 
-=======
+#=======
 led.complete.target<- led %>% drop_na(`Life expectancy`)
 
 
@@ -127,7 +150,7 @@ corrplot(correlation, type = "upper", order = "hclust",
 
 
 
-=======
+#=======
 #led.num1<- led.num %>% drop_na()
 
 
