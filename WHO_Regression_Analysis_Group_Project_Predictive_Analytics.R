@@ -60,27 +60,6 @@ hist(led$`percentage expenditure`)
 hist(led$`under-five deaths`)
 hist(led$`HIV/AIDS`)
 hist(led$`thinness 5-9 years`)
-#Group by values to illustrate accuracy issues
-library(dplyr)
-by_country<-led %>% group_by(Country)
-by_country%>% summarise(
-  summary_mean=mean(Population),
-  summary_sd=sd(Population),
-  summary_max=max(Population),
-  summary_min=min(Population)
-)
-by_country%>% summarise(
-  summary_mean=mean(`Life expectancy`),
-  summary_sd=sd(`Life expectancy`),
-  summary_max=max(`Life expectancy`),
-  summary_min=min(`Life expectancy`)
-)
-by_country%>% summarise(
-  summary_mean=mean(`Life expectancy`),
-  summary_sd=sd(`Life expectancy`),
-  summary_max=max(`Life expectancy`),
-  summary_min=min(`Life expectancy`)
-)
 
 
 #there are 10 missing values on the target variable, those were dropped
@@ -88,8 +67,13 @@ by_country%>% summarise(
 library(tidyr)
 
 led.complete.target<- led %>% drop_na(Life.expectancy)
-
+#Exploratory box plots
+afghanistan <- led%>%filter(Country=="Afghanistan")
+library(ggplot2)
+boxplot(afghanistan$`Adult Mortality`)
+boxplot(afghanistan$`percentage expenditure`)
 # fill the na values using the mice method of cart
+
 
 library(mice)
 md.pattern(led.complete.target)
@@ -133,7 +117,7 @@ led.num1<- led.train.num %>% drop_na()
 #Correlation without dropping na values
 install.packages("corrr")
 library(corrr)
-res.cor <- correlate(led.num1)
+res.cor <- correlate(led.train.num)
 res.cor
 
 #Check Correlation of all columns with respect to life expectancy 
@@ -143,7 +127,7 @@ res.cor %>%
 # for those who do not have the library install.packages("corrplot")
 install.packages("corrplot")
 library(corrplot)
-corrplot(res.cor, type = "upper", order = "hclust", 
+corrplot(correlation, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
 
 
@@ -155,7 +139,7 @@ corrplot(res.cor, type = "upper", order = "hclust",
 
 
 #run correlation on all variables  - correlation matrix and generate a graph using corrplot
-correlation <-cor(led.num1)
+correlation <-cor(led.train.num)
 correlation
 
 # for those who do not have the library install.packages("corrplot")
@@ -163,3 +147,34 @@ library(corrplot)
 corrplot(correlation, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
 
+#======
+#Cleaning Pipeline
+#Drops all the columns that are not going to be used
+drops<-c("Year","Status","infant deaths","percentage expenditure","Hepatitis B","under-five","HIV/AIDS","GDP","Population","thinness 5-9 years")
+led_prep<-led[,!(names(led)%in%drops)]
+led_clean<-data.frame(Country=character(),
+                      "Life.expectancy"=double(),
+                      "Adult.Mortality"=double(),
+                      "Alcohol"=double(),
+                      "BMI"=double(),
+                      "Polio"=double(),
+                      "Diphteria"=double(),
+                      "thinness.5-9.years"=double(),
+                      "Income.composition.of.resources"=double(),
+                      "Schooling"=double())
+#Country vector
+countries<-unique(led$Country)
+
+for (country in countries){
+  mask<-led_prep%>%filter(Country==country)
+  #clean_mask<-drop_na(mask)
+  #Mice goes here drop NA as placeholder
+  mask[is.na(mask)] <- 0
+  imp <- mice(mask, method = "cart", m = 1,ignore=NULL)
+  clean_mask<-complete(imp)
+  #Append dataframes
+  led_clean<-rbind(led_clean,clean_mask)
+  
+}
+
+  
