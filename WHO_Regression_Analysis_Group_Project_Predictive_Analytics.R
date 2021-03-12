@@ -133,7 +133,7 @@ led.num1<- led.train.num %>% drop_na()
 #Correlation without dropping na values
 install.packages("corrr")
 library(corrr)
-res.cor <- correlate(led.train.num)
+res.cor <- correlate(led.num1)
 res.cor
 
 #Check Correlation of all columns with respect to life expectancy 
@@ -143,7 +143,7 @@ res.cor %>%
 # for those who do not have the library install.packages("corrplot")
 install.packages("corrplot")
 library(corrplot)
-corrplot(correlation, type = "upper", order = "hclust", 
+corrplot(res.cor, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
 
 
@@ -155,7 +155,7 @@ corrplot(correlation, type = "upper", order = "hclust",
 
 
 #run correlation on all variables  - correlation matrix and generate a graph using corrplot
-correlation <-cor(led.train.num)
+correlation <-cor(led.num1)
 correlation
 
 # for those who do not have the library install.packages("corrplot")
