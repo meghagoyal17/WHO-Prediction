@@ -152,6 +152,7 @@ corrplot(correlation, type = "upper", order = "hclust",
 #Drops all the columns that are not going to be used
 drops<-c("Year","Status","infant deaths","percentage expenditure","Hepatitis B","under-five","HIV/AIDS","GDP","Population","thinness 5-9 years")
 led_prep<-led[,!(names(led)%in%drops)]
+led_prep[is.na(led_prep)]<-0
 led_clean<-data.frame(Country=character(),
                       "Life.expectancy"=double(),
                       "Adult.Mortality"=double(),
@@ -164,17 +165,38 @@ led_clean<-data.frame(Country=character(),
                       "Schooling"=double())
 #Country vector
 countries<-unique(led$Country)
-
+#Imputation of missing values
 for (country in countries){
   mask<-led_prep%>%filter(Country==country)
   #Mice goes here drop NA as placeholder
-  
-  imp <- mice(mask, method = "cart", m = 1,predictorMatrix=md.pattern(mask),ignore=NULL)
+  imp <- mice(mask, method = "cart", m = 1,ignore=NULL)
   clean_mask<-complete(imp)
   print(clean_mask)
+  #clean_mask<-drop_na(mask)
+  #Mice goes here drop NA as placeholder
+  imp <- mice(mask, method = "cart", m = 1,ignore=NULL)
+  clean_mask<-complete(imp)
   #Append dataframes
   led_clean<-rbind(led_clean,clean_mask)
   
 }
-
-  
+#Outlier Treatment 
+capOutlier <- function(x){
+  qnt <- quantile(x, probs=c(.25, .75), na.rm = T)
+  caps <- quantile(x, probs=c(.05, .95), na.rm = T)
+  H <- 1.5 * IQR(x, na.rm = T)
+  x[x < (qnt[1] - H)] <- caps[1]
+  x[x > (qnt[2] + H)] <- caps[2]
+  print(x)
+  return(x)
+}
+ColumnNames<-colnames(led_clean)
+ColumnNames=ColumnNames[ColumnNames!="Country"]
+led_clean$Life.expectancy<-capOutlier(led_clean$Life.expectancy)
+print(capOutlier(led_clean$Life.expectancy))
+print(length(capOutlier(led_clean$Life.expectancy)))
+for(column in ColumnNames){
+  print(column)
+  print(capOutlier(led_clean$column))
+  #led_clean$column<-capOutlier(led_clean$column)
+}
