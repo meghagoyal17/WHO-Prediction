@@ -13,7 +13,6 @@ capOutlier <- function(x){
   return(x)
 }
 #=================================Libraries=====================================
-#import the dataset
 library(readr)
 install.packages('psych')
 library(psych)
@@ -89,6 +88,7 @@ for (country in countries){
 warnings()
 summary(led_clean)
 summary(led)
+led_clean_complete<-cbind(led_prep[,c(2)],led_clean)
 write.csv(led_clean,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
           row.names=FALSE)
 
