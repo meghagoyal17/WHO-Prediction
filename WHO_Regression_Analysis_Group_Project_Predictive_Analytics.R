@@ -119,7 +119,7 @@ clean_LED <- clean_LED %>% drop_na(Life.expectancy)
 #Cleaning Pipeline
 
 #Drops all the columns that are not going to be used
-drops<-c("Year","Status","infant deaths","percentage expenditure","Hepatitis B","under-five","HIV/AIDS","GDP","Population","thinness 5-9 years")
+drops<-c("Year","Status","infant deaths","percentage expenditure","Hepatitis B","under-five","GDP","Population","thinness 5-9 years")
 led_prep<-led[,!(names(led)%in%drops)]
 led_prep[is.na(led_prep)]<-0
 led_clean<-data.frame(Country=character(),
