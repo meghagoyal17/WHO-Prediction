@@ -152,7 +152,7 @@ warnings()
 summary(led_clean)
 summary(led)
 led_clean_complete<-cbind(led_prep[,c(2)],led_clean)
-write.csv(led_clean,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
+write.csv(led_clean_complete,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
           row.names=FALSE)
 
 
