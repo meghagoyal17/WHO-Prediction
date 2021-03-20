@@ -32,6 +32,69 @@ library(tidyr)
 led <- read_csv("C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data.csv")
 led <- Life.Expectancy.Data
 
+
+# to fill the income composition of resources for USA and BAHAMAS
+HDI <- Human_Development_Index_HDI_
+HDI[is.na(HDI)] <- 0
+led[is.na(led)] <- 0
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2000 & 
+                                      led$Country=='Bahamas']<- HDI$'2000'[HDI$Country=='Bahamas']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2000 & 
+                                      led$Country=='United States of America']<- HDI$'2000'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2001 & 
+                                      led$Country=='United States of America']<- HDI$'2001'[HDI$Country=='United States']
+
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2002 & 
+                                      led$Country=='United States of America']<- HDI$'2002'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2003 & 
+                                      led$Country=='United States of America']<- HDI$'2003'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2004 & 
+                                      led$Country=='United States of America']<- HDI$'2004'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2005 & 
+                                      led$Country=='United States of America']<- HDI$'2005'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2006 & 
+                                      led$Country=='United States of America']<- HDI$'2006'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2007 & 
+                                      led$Country=='United States of America']<- HDI$'2007'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2008 & 
+                                      led$Country=='United States of America']<- HDI$'2008'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2009 & 
+                                      led$Country=='United States of America']<- HDI$'2009'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2010 & 
+                                      led$Country=='United States of America']<- HDI$'2010'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2011 & 
+                                      led$Country=='United States of America']<- HDI$'2011'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2012 & 
+                                      led$Country=='United States of America']<- HDI$'2012'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2013 & 
+                                      led$Country=='United States of America']<- HDI$'2013'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2014 & 
+                                      led$Country=='United States of America']<- HDI$'2014'[HDI$Country=='United States']
+led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
+                                      led$Year==2015 & 
+                                      led$Country=='United States of America']<- HDI$'2015'[HDI$Country=='United States']
+
+
+
+
+
+
 #================================Correlation====================================
 
 #to perform correlation on all numerical variables we need to drop 2 categorical columns, we also need to get rid of na values (deleted for now)
@@ -56,7 +119,7 @@ clean_LED <- clean_LED %>% drop_na(Life.expectancy)
 #Cleaning Pipeline
 
 #Drops all the columns that are not going to be used
-drops<-c("Year","Status","infant deaths","percentage expenditure","Hepatitis B","under-five","HIV/AIDS","GDP","Population","thinness 5-9 years")
+drops<-c("Year","Status","infant deaths","percentage expenditure","Hepatitis B","under-five","GDP","Population","thinness 5-9 years")
 led_prep<-led[,!(names(led)%in%drops)]
 led_prep[is.na(led_prep)]<-0
 led_clean<-data.frame(Country=character(),
@@ -89,7 +152,7 @@ warnings()
 summary(led_clean)
 summary(led)
 led_clean_complete<-cbind(led_prep[,c(2)],led_clean)
-write.csv(led_clean,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
+write.csv(led_clean_complete,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
           row.names=FALSE)
 
 #=========================DATA EXPLORATION=====================================
@@ -245,3 +308,4 @@ data.frame(
   MAE = mae(basic.model, data = led.train)
 )
 ols_vif_tol(basic.model)
+
