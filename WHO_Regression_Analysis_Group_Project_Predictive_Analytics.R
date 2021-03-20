@@ -155,10 +155,123 @@ led_clean_complete<-cbind(led_prep[,c(2)],led_clean)
 write.csv(led_clean_complete,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
           row.names=FALSE)
 
+#=========================DATA EXPLORATION=====================================
+#diagnose the variables more deeply 
+diagnose(led)
+summary(led)
+
+#diagnose the variables more deeply 
+diagnose_category(led)
+
+diagnose_numeric(led)
+
+diagnose_outlier(led)
+
+#Missing values table
+sort(sapply(led,function(x) sum(is.na(x))),decreasing = T)
+md.pattern(led)
+
+#Dropping 10 missing values of target variable
+led<- led %>% drop_na(Life.expectancy)
+
+#All histograms of numerical variables
+names<-names(led)
+classes<-sapply(led,class)
+for(name in names[classes == 'numeric'])
+{
+  dev.new()
+  hist(led[,name]) # subset with [] not $
+} 
+ 
+#Barplot and table for categorical variable       
+barplot(table(led$Status))
+table(led$Status) #Developed 512 and developing 2426
+
+#Box plots for continous variables:
+ggplot(data=led) + geom_boxplot(aes(x=Adult.Mortality), size=1.2)
+
+ggplot(data=led) + geom_boxplot(aes(x=infant.deaths), size=1.2)
+
+ggplot(data=led) + geom_boxplot(aes(x=BMI), size=1.2)
+
+ggplot(data=led) + geom_boxplot(aes(x=GDP), size=1.2)
+
+ggplot(data=led) + geom_boxplot(aes(x=population), size=1.2)
+
+ggplot(data=led) + geom_boxplot(aes(x=Life.expectancy), size=1.2)
+
+#Scatter plots with target variable
+ggplot(led, aes(GDP, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led, aes(GDP, Life.expectancy, color = Year)) + 
+  geom_jitter()
+
+ggplot(led, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()
+            
+#Boxplot of life expectancy on the basis of status of country
+ggplot(data = led, aes(x=Status, y=Life.expectancy, fill = Status)) + geom_boxplot()
+#Life Expectancy is high for developed countries as already expected
+
+#Cheking difference in means of developed and developing countries using ANOVA
+summary(aov(Life.expectancy ~ Status, data = led))
+#p-value is less than 0.05 - reject null hypothesis
+#There is significant differences in life expectancy for developed and developing countries
+
+#Correlation
+data_num <- led %>% 
+  select_if(is.numeric)
+cor(data_num, use="complete.obs")
+
+#Life expenctancy has strong positive correlation with Schooling and Income composition of resources
+#And negative strong correlation with Adult mortality
+#Weak correlation with population and measles
+#Strong correlation between infant deaths and under 5 deaths - multicollinearity
+#Therefore removing under 5 deaths
+
+#Hepatitis, Polio and diphtheria is converted into 2 groups according to World health assembly rule by 2020
+#Under 90% and above 90%
+
+led3 <- led %>% 
+  select(-Country, -Year) %>%
+  mutate(Hepatitis.B = ifelse(Hepatitis.B < 90, "<90% Covered", ">=90% Covered"),
+         Polio = ifelse(Polio < 90, "<90% Covered", ">=90% Covered"),
+         Diphtheria = ifelse(Diphtheria < 90, "<90% Covered", ">=90% Covered"),
+         Hepatitis.B = as.factor(Hepatitis.B),
+         Polio = as.factor(Polio),
+         Diphtheria = as.factor(Diphtheria))
+str(led3)
+table(led3$Hepatitis.B)
+table(led3$Polio)
+table(led3$Diphtheria)
+
+#Box plot of life expectancy on hepatitis
+library(ggplot2)
+ggplot(data = led3, aes(x=Hepatitis.B, y=Life.expectancy, fill = Hepatitis.B)) + geom_boxplot()
+#anova
+summary(aov(Life.expectancy ~ Hepatitis.B, data = led3)) #p less than 0.05
+
+#Box plot of life expectancy on polio
+ggplot(data = led3, aes(x=Polio, y=Life.expectancy, fill = Polio)) + geom_boxplot()
+summary(aov(Life.expectancy ~ Polio, data = led3)) #p less than 0.05
+dev.off()
+
+#Box plot of life expectancy on Diphtheria
+ggplot(data = led3, aes(x=Diphtheria, y=Life.expectancy, fill = Diphtheria)) + geom_boxplot()
+summary(aov(Life.expectancy ~ Diphtheria, data = led3)) #p less than 0.05
 
 
 #=============================MODEL BUILDING=====================================
-
 
 
 #building base model
@@ -195,43 +308,4 @@ data.frame(
   MAE = mae(basic.model, data = led.train)
 )
 ols_vif_tol(basic.model)
-#=========================DATA EXPLORATION=====================================
-#diagnose the variables more deeply 
-diagnose(led)
 
-#pair plot
-
-
-summary(led)
-
-
-#diagnose the variables more deeply 
-diagnose_category(led)
-
-diagnose_numeric(led)
-
-diagnose_outlier(led)
-
-
-
-#create histoframs to look at the distrinution of numeric variables
-hist(led$`Adult Mortality`)
-hist(led$`Hepatitis B`)
-hist(led$Polio)
-hist(led$GDP)
-hist(led$`Income composition of resources`)
-hist(led$`infant deaths`)
-hist(led$Measles)
-hist(led$`Total expenditure`)
-hist(led$Population)
-hist(led$Schooling)
-hist(led$Status)
-hist(led$Alcohol)
-hist(led$BMI)
-hist(led$Diphtheria)
-hist(led$`thinness  1-19 years`)
-hist(led$`Life expectancy`)
-hist(led$`percentage expenditure`)
-hist(led$`under-five deaths`)
-hist(led$`HIV/AIDS`)
-hist(led$`thinness 5-9 years`)
