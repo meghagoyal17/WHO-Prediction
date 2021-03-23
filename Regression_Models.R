@@ -57,12 +57,12 @@ summary(model3.low)
 
 #Polynomial with interactions model
 model4.low <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.five.to.nine.years+Income.composition.of.resources+
-                   poly(HIV.AIDS, 3, raw = TRUE)+ HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = train.low)
+                   I(HIV.AIDS^2) + I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = train.low)
 summary(model4.low)
 #In the above model, both the interactions of Alcohol and HIV aids with Adult mortality is very significant and overall R square value is increase to 0.8323 from 0.76
 
 model5.low <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.five.to.nine.years+Income.composition.of.resources+
-                   poly(HIV.AIDS, 3, raw = TRUE)+ HIV.AIDS*Adult.Mortality +Adult.Mortality*Income.composition.of.resources+ Alcohol*Adult.Mortality, data = train.low)
+                   I(HIV.AIDS^2) + I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality +Adult.Mortality*Income.composition.of.resources+ Alcohol*Adult.Mortality, data = train.low)
 summary(model5.low)
 #Adult mortality with income composition is also significant but doesnt improves models that much
 
@@ -138,7 +138,7 @@ summary(model3.medium)
 
 #Polynomial with interactions model 
 model4.medium <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+percentage.expenditure+Total.expenditure+Diphtheria+Income.composition.of.resources+
-                      poly(HIV.AIDS, 3, raw = TRUE)+ HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = train.medium)
+                      I(HIV.AIDS^2) + I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = train.medium)
 summary(model4.medium)
 #In the above model, both the interactions of Alcohol and HIV aids with Adult mortality is very significant and overall R square value is increase to 0.8323 from 0.76
 
@@ -181,7 +181,7 @@ model1.medium.high <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                            Income.composition.of.resources+Schooling+
                            under.five.deaths + HIV.AIDS + 
                            thinness.five.to.nine.years, data = train.medium.high)
-summary(model1.medium)
+summary(model1.medium.high)
 
 
 #perform a stepwise variable selection
@@ -331,3 +331,30 @@ data.frame(
   MAE = MAE(predictions.high, led.high$Life.expectancy)
 )
 #Model 3 fits testing data well like training data
+
+
+#----------------Running the above best models on original dataset-----------------
+
+#Best Model 5 of low income countries on whole dataset;
+led <- read.csv(file.choose())
+m1 <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.5.9.years+Income.composition.of.resources+
+                   I(HIV.AIDS^2) + I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality +Adult.Mortality*Income.composition.of.resources+ Alcohol*Adult.Mortality, data = led)
+summary(m1)
+
+#Best Model 4 of medium income countries on whole dataset;
+m2 <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+percentage.expenditure+Total.expenditure+Diphtheria+Income.composition.of.resources+
+                      I(HIV.AIDS^2)+I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = led)
+summary(m2)
+
+#Best Model 3 of medium-high income countries on whole dataset;
+m3 <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+BMI+Polio +Total.expenditure+Diphtheria+HIV.AIDS+Income.composition.of.resources
+                         + HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = led)
+summary(m3)
+
+#Best Model 3 of high income countries on whole dataset;
+m4 <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.5.9.years+Income.composition.of.resources+
+                    Alcohol*Adult.Mortality, data = led)
+summary(m4) #R2 value os 0.7375 in whole dataset as compared to 0.53 in high-income group
+
+#Overall all models performed quite better on the whole dataset
+
